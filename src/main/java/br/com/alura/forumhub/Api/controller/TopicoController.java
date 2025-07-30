@@ -2,6 +2,7 @@ package br.com.alura.forumhub.Api.controller;
 
 import br.com.alura.forumhub.Api.domain.topico.TopicoRepository;
 import br.com.alura.forumhub.Api.domain.topico.TopicoService;
+import br.com.alura.forumhub.Api.domain.topico.dto.DadosAtualizacaoTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosCadastroTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosDetalhamentoTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosListagemTopico;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page; // <-- IMPORT CORRIGIDO
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -55,6 +57,17 @@ public class TopicoController {
         var topico = repository.getReferenceById(id);
         return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
 
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<DadosDetalhamentoTopico> atualizar
+            (@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoTopico dados) {
+
+        var topico = repository.getReferenceById(id);
+        topico.atualizarInformacoes(dados);
+
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 
 }
