@@ -6,6 +6,9 @@ import br.com.alura.forumhub.Api.domain.topico.dto.DadosAtualizacaoTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosCadastroTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosDetalhamentoTopico;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosListagemTopico;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/topicos")
+@Tag(name = "Tópicos", description = "Operações relacionadas a tópicos do fórum")
+@SecurityRequirement(name = "bearer-key")
 public class TopicoController {
 
     private final TopicoService service;
@@ -32,6 +37,8 @@ public class TopicoController {
 
     @PostMapping
     @Transactional
+    @Operation(summary = "Criar um novo tópico",
+            description = "Registra um novo tópico no banco de dados. Requer autenticação.")
     public ResponseEntity<DadosDetalhamentoTopico> cadastrar (@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder) {
 
         var topico = service.criar(dados);
@@ -42,6 +49,8 @@ public class TopicoController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos os tópicos ativos",
+            description = "Retorna uma lista paginada de todos os tópicos que não foram logicamente excluídos.")
     public ResponseEntity<Page<DadosListagemTopico>> listar(
             @PageableDefault(size = 10, sort = {"dataCriacao"}) Pageable paginacao
     ) {
@@ -52,6 +61,8 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Detalhar um tópico por ID",
+            description = "Retorna os detalhes completos de um tópico específico, buscando pelo seu ID.")
     public ResponseEntity<DadosDetalhamentoTopico> detalhar(@PathVariable Long id) {
 
         var topico = repository.getReferenceById(id);
@@ -61,6 +72,8 @@ public class TopicoController {
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "Atualizar um tópico por ID",
+            description = "Atualiza as informações (título e/ou mensagem) de um tópico existente.")
     public ResponseEntity<DadosDetalhamentoTopico> atualizar
             (@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoTopico dados) {
 
@@ -72,6 +85,8 @@ public class TopicoController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Excluir um tópico por ID (Exclusão Lógica)",
+            description = "Marca um tópico como inativo no banco de dados. O registro não é fisicamente removido.")
     public ResponseEntity excluir(@PathVariable Long id) {
 
         var topico = repository.getReferenceById(id);

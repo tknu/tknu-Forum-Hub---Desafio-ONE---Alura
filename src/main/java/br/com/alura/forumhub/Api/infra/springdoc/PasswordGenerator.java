@@ -1,4 +1,4 @@
-package br.com.alura.forumhub.Api.infra.test;
+package br.com.alura.forumhub.Api.infra.springdoc;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

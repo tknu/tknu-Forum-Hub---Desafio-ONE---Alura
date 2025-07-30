@@ -1,6 +1,8 @@
 package br.com.alura.forumhub.Api.controller;
 
 import br.com.alura.forumhub.Api.infra.security.dto.DadosAutenticacao;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import br.com.alura.forumhub.Api.domain.usuario.Usuario;
 
 @RestController
 @RequestMapping("/login")
+@Tag(name = "Autenticação", description = "Operações de autenticação de usuários")
 public class AutenticacaoController {
 
     // Injetando o Gerenciador de Autenticação do Spring
@@ -30,6 +33,8 @@ public class AutenticacaoController {
     }
 
     @PostMapping
+    @Operation(summary = "Realizar login",
+            description = "Autentica um usuário com base no login e senha e retorna um token JWT.")
     public ResponseEntity efetuarLogin (@RequestBody @Valid DadosAutenticacao dados) {
 
         var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
