@@ -32,8 +32,12 @@ public class Topico {
     private String autor;
     private String curso;
 
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean ativo;
+
     // Construtor para criação, onde alguns campos  são definidos automaticamente
     public Topico(DadosCadastroTopico dados) {
+        this.ativo = true;
         this.titulo = dados.titulo();
         this.mensagem = dados.mensagem();
         this.autor = dados.autor();
@@ -53,5 +57,10 @@ public class Topico {
         if (dados.status() != null) {
             this.status = dados.status();
         }
+    }
+
+    // Método para exclusão lógoca
+    public void excluir() {
+        this.ativo = false;
     }
 }

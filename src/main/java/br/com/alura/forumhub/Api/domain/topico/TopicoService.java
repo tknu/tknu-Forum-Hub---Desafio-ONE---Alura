@@ -20,15 +20,8 @@ public class TopicoService {
         if (repository.existsByTituloAndMensagem(dados.titulo(), dados.mensagem())) {
             throw new IllegalArgumentException("Tópico Duplicado!");
         }
-        var topico = new Topico(
-                null,
-                dados.titulo(),
-                dados.mensagem(),
-                LocalDateTime.now(),
-                StatusTopico.NAO_RESPONDIDO,
-                dados.autor(),
-                dados.curso()
-        );
+        var topico = new Topico(dados);
+
         repository.save(topico);
 
         return topico;

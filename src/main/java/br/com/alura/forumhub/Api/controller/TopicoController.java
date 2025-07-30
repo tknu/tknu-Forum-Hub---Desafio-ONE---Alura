@@ -1,18 +1,18 @@
 package br.com.alura.forumhub.Api.controller;
 
+import br.com.alura.forumhub.Api.domain.topico.TopicoRepository;
 import br.com.alura.forumhub.Api.domain.topico.TopicoService;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosCadastroTopico;
-import br.com.alura.forumhub.Api.domain.topico.TopicoRepository;
 import br.com.alura.forumhub.Api.domain.topico.dto.DadosDetalhamentoTopico;
+import br.com.alura.forumhub.Api.domain.topico.dto.DadosListagemTopico;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; // <-- IMPORT CORRIGIDO
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriBuilder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -20,8 +20,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class TopicoController {
 
     private final TopicoService service;
+    private final TopicoRepository repository;
 
-    public TopicoController(TopicoService service) {
+    public TopicoController(TopicoRepository repository, TopicoService service) {
+
+        this.repository = repository;
         this.service = service;
     }
 
@@ -34,6 +37,24 @@ public class TopicoController {
         var uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new DadosDetalhamentoTopico(topico));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DadosListagemTopico>> listar(
+            @PageableDefault(size = 10, sort = {"dataCriacao"}) Pageable paginacao
+    ) {
+        var page =
+                repository.findAllByAtivoTrue(paginacao)
+                        .map(DadosListagemTopico::new);
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DadosDetalhamentoTopico> detalhar(@PathVariable Long id) {
+
+        var topico = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+
     }
 
 }
